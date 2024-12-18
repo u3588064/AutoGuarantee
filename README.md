@@ -1,8 +1,8 @@
-# 保函要素抽取项目
+# 保函业务自动化项目
 
 ## 项目概述
 
-本项目旨在从保函文本中抽取关键要素，以便于法律和金融专业人士进行分析和处理。项目使用自然语言处理技术，从保函文本中提取特定要素，并以JSON格式输出结果。
+本项目旨在从保函文本中抽取要素、切分条款、提示要点、录制系统，以便于法律和金融专业人士进行分析和处理。项目使用自然语言处理技术，从保函文本中提取特定要素，并以JSON格式输出结果。
 
 ## 项目结构
 
@@ -15,10 +15,14 @@
 │
 ├── src/
 │   ├── extractor.py              # 要素抽取脚本
+│   ├── clause_splitter.py        # 条款分割脚本
+│   ├── key_points.py             # 要点提示脚本
+│   ├── format.py                 # 格式处理脚本
 │   └── ...                       # 其他源代码文件
 │
 ├── tests/
-│   ├── test_extractor.py         # 单元测试
+│   ├── test_extractor.py         # 要素抽取单元测试
+│   ├── test_clause_splitter.py   # 条款分割单元测试
 │   └── ...                       # 其他测试文件
 │
 ├── README.md                     # 项目说明文档
@@ -46,6 +50,25 @@
 14. 保函的金额
 15. 保函的币种
 
+## 条款分割
+
+项目支持按以下类别切分条款：
+
+    需提交的支持索赔的单据
+    需提交单据的语言
+    交单形式
+    交单地点
+    生效条款
+    失效条款
+    费用的承担方
+    担保人的承诺
+    索赔的提交要求
+    索赔的时间和地点要求
+    适用规则
+    适用法律
+    司法管辖地
+
+
 ## 使用方法
 
 1. 克隆项目仓库：
@@ -68,14 +91,33 @@
     脚本会在终端输出抽取的要素，以JSON格式展示。
 
 ## 示例
+输入文本：
+```
+Performance Guarantee
 
-输出结果：
+Issue date: December 7, 2023
+No.: XX1234567
+
+To:Machine Shopping Department (hereinafter called 'the Beneficiary')
+Add:Q.X.TOY 101 HUAYUAN, Korea
+
+…… (SEE Full Text in the repository)
+
+This performance guarantee shall be valid from its issuance and remian valid until August 35, 2025 (expiry date). Any demand in respect of this guarantee should reach us at our counter not later than the close of our Business hours on the above expiry date.
+
+This performance guarantee is only personnel to you and is not assignable or transferable.
+
+This guaranttee is subject to the Uniform Rules for Demand Guarantees, ICC Publication No.758.
+
+```
+
+要素抽取结果：
 ```json
 {
   "担保人的SWIFT标识代码": "",
   "开立日期": "December 7, 2023",
   "保函种类": ["Performance Guarantee","Advance Payment Guarantee"],
-  "保函编号": "GC1234567",
+  "保函编号": "XX1234567",
   "担保人的名称": "Bank of China Ltd, ABC Branch",
   "保函开立地址": "No.1 N Road, Xi Province, P. R. China",
   "申请人的名称": "GUANGDONG GX GROUP MACHINE CO., LTD",
@@ -90,6 +132,25 @@
 }
 {
  "保函种类": ["Performance Guarantee","Advance Payment Guarantee"]
+}
+```
+
+条款切分结果：
+```
+{
+  "需提交的支持索赔的单据": null,
+  "需提交单据的语言": null,
+  "交单形式": "any such demand in original should be presented to us through your Banker confirmation that the signatures thereon are authentic and legally binding upon you.",
+  "交单地点": "our counter",
+  "生效条款": "This performance guarantee shall be valid from its issuance",
+  "失效条款": "This performance guarantee shall ... remain valid until August 35, 2025 (expiry date).",
+  "费用的承担方": null,
+  "担保人的承诺": "we undertake to pay you unconditionally and independently, upon our receipt of your first written demand in original paper form declaring the seller fails to perform its obligations under the Contract and specifying in which respect the seller is in failure.",
+  "索赔的提交要求": "your first written demand in original paper form declaring the seller fails to perform its obligations under the Contract and specifying in which respect the seller is in failure.",
+  "索赔的时间和地点要求": "Any demand in respect of this guarantee should reach us at our counter not later than the close of our Business hours on the above expiry date.",
+  "适用规则": "This guaranttee is subject to the Uniform Rules for Demand Guarantees, ICC Publication No.758.",
+  "适用法律": null,
+  "司法管辖地": null
 }
 ```
 
