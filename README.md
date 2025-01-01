@@ -71,6 +71,12 @@
 
 ## 使用方法
 
+#在线版体验
+
+完成度80%，域名申请中
+
+#本地部署
+
 1. 克隆项目仓库：
     ```bash
     git clone https://github.com/u3588064/AutoGuarantee.git
